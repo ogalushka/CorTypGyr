@@ -1,0 +1,9 @@
+{
+    "include": ["./src/*"],
+    "compilerOptions": {
+        "outDir": "www/js",
+        //"target": "ES6",
+        "module": "NONE",
+        "outFile": "./www/js/index.js"
+    }
+}
