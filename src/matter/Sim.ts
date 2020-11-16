@@ -2,6 +2,9 @@ declare var Matter:any;
 
 class Sim
 {
+    step:number = 1000/60;
+
+    deltaTime:number = 0;
     engine;
 
     constructor()
@@ -13,19 +16,28 @@ class Sim
 
         this.engine = Engine.create();
         var world = this.engine.world;
-        //world.gravity.x = 0;
-        //world.gravity.y = 0;
+        world.gravity.x = 0;
+        world.gravity.y = 0;
+        world.gravity.scale *= 10;
         
-        //World.add(world, Bodies.circle(600, 150, 40));
-        var innerRadius = 100;
-        var outerRadius = 110;
-        var sections = 10;
-        var wallVertices = Builder.buildCircleWall(innerRadius, outerRadius, sections);
-        //var walls = wallVertices.map(v => Bodies.fromVertices(550, 200, v, {isStatic: true}));
-        //var walls = wallVertices.map(v => Body.create({isStatic: true, position: {x:550, y:200}, vertices: v}));
-        //var body = Body.create({parts: walls});
-        World.add(world, Bodies.fromVertices(550, 200, wallVertices, {isStatic: true}));
-        //World.add(walls);
+        var gameRadius = 420;
+        var radiusStep = 55;
+
+        var outerBounds =  Builder.buildCircleWallWithGap(new Vertex(512, 512), gameRadius, 10, 60, 0, 0, Bodies);
+        var gapAngle = 90;
+        for (var radius = gameRadius - radiusStep; radius > 100; radius -= radiusStep, gapAngle = (gapAngle + 180) % 360)
+        {
+            var bodies = Builder.buildCircleWallWithGap(new Vertex(512, 512), radius, 10, 60, gapAngle, 42, Bodies);
+            World.add(world, bodies);
+        }
+        World.add(world, outerBounds);
+
+
+        World.add(world, Bodies.circle(512, 512 + 380, 20, { friction: 0, restitution: 0.5, density: 0.000001 }));
+        World.add(world, Bodies.circle(512-10, 512 + 380, 20, { friction: 0, restitution: 0.5, density: 0.000001 }));
+        World.add(world, Bodies.circle(512+10, 512 + 380, 20, { friction: 0, restitution: 0.5, density: 0.000001 }));
+        World.add(world, Bodies.circle(512+15, 512 + 375, 20, { friction: 0, restitution: 0.5, density: 0.000001 }));
+        World.add(world, Bodies.circle(512-15, 512 + 375, 20, { friction: 0, restitution: 0.5, density: 0.000001 }));
     }
 
     setGravity(x:number, y:number)
@@ -36,7 +48,12 @@ class Sim
 
     update(dt:number)
     {
-        Matter.Engine.update(this.engine, dt);
+        this.deltaTime += dt;
+        while(this.deltaTime > this.step)
+        {
+            Matter.Engine.update(this.engine, this.step);
+            this.deltaTime -= this.step;
+        }
     }
 
     render(context:CanvasRenderingContext2D)
@@ -44,6 +61,8 @@ class Sim
         var bodies = Matter.Composite.allBodies(this.engine.world);
 
         context.fillStyle = '#fff';
+        context.lineWidth = 1;
+        context.strokeStyle = '#999';
         context.beginPath();
 
         for (var i = 0; i < bodies.length; i += 1) {
@@ -58,8 +77,6 @@ class Sim
             context.lineTo(vertices[0].x, vertices[0].y);
         }
 
-        context.lineWidth = 1;
-        context.strokeStyle = '#999';
         context.stroke();
     }
 }

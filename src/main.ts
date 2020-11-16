@@ -1,6 +1,6 @@
 document.addEventListener('deviceready', onDeviceReady, false);
 
+var game:Game;
 function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
-    new Game("Hello worldddd")
+    game = new Game(new Color(10, 255, 255));
 }

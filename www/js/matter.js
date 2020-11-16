@@ -6734,7 +6734,7 @@
          */
         Bodies.fromVertices = function(x, y, vertexSets, options, flagInternal, removeCollinear, minimumArea) {
             if (!decomp) {
-                decomp = Common._requireGlobal('decomp', 'poly-decomp');
+                //decomp = Common._requireGlobal('decomp', 'poly-decomp');
             }
     
             var body,
