@@ -7,7 +7,7 @@ class Orientation
     fromEvent(event:DeviceOrientationEvent)
     {
         this.alpha = event.alpha;
-        this.beta = event.beta;
-        this.gamma = event.gamma;
+        this.beta = event.beta / 90;
+        this.gamma = event.gamma / 90;
     }
 }
